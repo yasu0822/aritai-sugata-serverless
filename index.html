@@ -9,15 +9,16 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <style>
         body {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f1419 100%);
             min-height: 100vh;
-            font-family: 'Hiragino Sans', 'Yu Gothic', sans-serif;
+            font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
         }
         
         .glass-card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
         
@@ -25,212 +26,194 @@
             color: #d4af37;
         }
         
-        .btn-primary {
-            background: linear-gradient(45deg, #d4af37, #f4d03f);
-            transition: all 0.3s ease;
-            color: #1a1a2e;
-            font-weight: bold;
+        .gold-border {
+            border-color: #d4af37;
         }
         
-        .btn-primary:hover {
+        .btn-gold {
+            background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
+            color: #1a1a2e;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-gold:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
         }
         
         .input-field {
             background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
             color: white;
             transition: all 0.3s ease;
         }
         
         .input-field:focus {
-            background: rgba(255, 255, 255, 0.15);
             border-color: #d4af37;
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
-        }
-        
-        .input-field::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-        
-        .loading-spinner {
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top: 3px solid #d4af37;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
         }
         
         .char-counter {
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+            color: #d4af37;
         }
         
-        .char-counter.warning {
-            color: #f39c12;
-        }
-        
-        .char-counter.error {
-            color: #e74c3c;
+        .char-counter.over-limit {
+            color: #ff6b6b;
         }
         
         .result-card {
             background: rgba(255, 255, 255, 0.08);
-            border-left: 4px solid #d4af37;
-            animation: fadeInUp 0.6s ease-out;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
         }
         
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            border-top-color: #d4af37;
+            animation: spin 1s ease-in-out infinite;
         }
         
-        .vision-title {
-            background: linear-gradient(45deg, #d4af37, #f4d03f);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: bold;
-            font-size: 1.2rem;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .error-message {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            color: #ff6b6b;
+            margin-top: 1rem;
         }
     </style>
 </head>
-<body class="flex items-center justify-center p-4">
-    <div class="w-full max-w-2xl">
-        <!-- アクセスコード入力画面 -->
-        <div id="accessCodeScreen" class="glass-card rounded-2xl p-8">
-            <div class="text-center mb-8">
-                <h1 class="text-3xl font-bold text-white mb-2">
-                    <i class="fas fa-compass gold-accent mr-3"></i>
-                    ありたい姿探究アプリ
-                </h1>
-                <p class="text-gray-300">あなただけのワクワクする未来を発見しよう</p>
-            </div>
-            
-            <div class="space-y-6">
-                <div>
-                    <label class="block text-white text-sm font-medium mb-2">
-                        <i class="fas fa-key gold-accent mr-2"></i>
-                        イベント参加者専用コード
-                    </label>
-                    <input 
-                        type="password" 
-                        id="accessCodeInput" 
-                        class="input-field w-full px-4 py-3 rounded-lg focus:outline-none"
-                        placeholder="アクセスコードを入力してください"
-                    >
-                </div>
-                
+<body class="text-white">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- ヘッダー -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold gold-accent mb-4">
+                <i class="fas fa-compass mr-3"></i>
+                ありたい姿探究アプリ
+            </h1>
+            <p class="text-gray-300 text-lg">あなただけの未来への道筋を発見しましょう</p>
+        </div>
+
+        <!-- アクセスコード入力 -->
+        <div id="accessCodeSection" class="glass-card p-8 mb-8">
+            <h2 class="text-2xl font-semibold gold-accent mb-6 text-center">
+                <i class="fas fa-key mr-2"></i>
+                アクセスコード
+            </h2>
+            <div class="max-w-md mx-auto">
+                <input 
+                    type="text" 
+                    id="accessCodeInput" 
+                    placeholder="イベント専用コードを入力してください"
+                    class="input-field w-full px-4 py-3 text-center tracking-wider"
+                    maxlength="20"
+                >
                 <button 
                     onclick="checkAccessCode()" 
-                    class="btn-primary w-full py-3 px-6 rounded-lg"
+                    class="btn-gold w-full mt-4 py-3 rounded-lg font-semibold"
                 >
                     <i class="fas fa-unlock mr-2"></i>
-                    アプリを開始する
+                    認証
                 </button>
+                <div id="accessCodeError" class="error-message hidden">
+                    正しいアクセスコードを入力してください
+                </div>
             </div>
         </div>
 
-        <!-- メイン画面 -->
-        <div id="mainScreen" class="hidden">
-            <!-- ヘッダー -->
-            <div class="glass-card rounded-2xl p-6 mb-6">
-                <div class="text-center">
-                    <h1 class="text-2xl font-bold text-white mb-2">
-                        <i class="fas fa-compass gold-accent mr-3"></i>
-                        ありたい姿探究アプリ
-                    </h1>
-                    <p class="text-gray-300">ワードや文章からあなただけの未来を描き出します</p>
+        <!-- メインアプリ -->
+        <div id="mainApp" class="hidden">
+            <!-- ワード入力セクション -->
+            <div class="glass-card p-8 mb-8">
+                <h2 class="text-2xl font-semibold gold-accent mb-6 text-center">
+                    <i class="fas fa-pen-fancy mr-2"></i>
+                    ワード・文章を入力してください
+                </h2>
+                <div class="text-gray-300 mb-4 text-center">
+                    <p>改行で区切って入力してください（最大20個まで）</p>
+                    <p class="text-sm mt-2">1行あたり100文字まで</p>
                 </div>
+                
+                <div class="relative">
+                    <textarea 
+                        id="wordsInput" 
+                        placeholder="例：&#10;リーダーシップを発揮したい&#10;創造的なアイデアを大切にする&#10;チームメンバーと協力する&#10;新しいことに挑戦する勇気"
+                        class="input-field w-full px-4 py-4 h-48 resize-none"
+                        oninput="updateCharCount()"
+                    ></textarea>
+                    <div class="flex justify-between items-center mt-2">
+                        <div id="lineCount" class="char-counter">0行</div>
+                        <div id="charCount" class="char-counter">各行の文字数をチェック中...</div>
+                    </div>
+                </div>
+                
+                <button 
+                    onclick="analyzeWords()" 
+                    id="analyzeBtn"
+                    class="btn-gold w-full mt-6 py-4 rounded-lg text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    <i class="fas fa-magic mr-2"></i>
+                    ありたい姿を発見する
+                </button>
+                
+                <div id="inputError" class="error-message hidden"></div>
             </div>
 
-            <!-- 入力フォーム -->
-            <div class="glass-card rounded-2xl p-6 mb-6">
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-white text-sm font-medium mb-2">
-                            <i class="fas fa-edit gold-accent mr-2"></i>
-                            ワードや文章を入力してください（1行100文字まで）
-                        </label>
-                        <textarea 
-                            id="wordsInput" 
-                            class="input-field w-full px-4 py-3 rounded-lg focus:outline-none resize-none"
-                            rows="8"
-                            placeholder="例：&#10;リーダーシップを発揮したい&#10;チームメンバーを大切にする&#10;新しいことに挑戦する勇気&#10;&#10;※改行で区切って入力してください"
-                        ></textarea>
-                        <div id="charCounter" class="char-counter mt-2 text-right">
-                            入力された行数: 0行
-                        </div>
+            <!-- 結果表示セクション -->
+            <div id="resultsSection" class="hidden">
+                <div class="result-card fade-in">
+                    <h2 class="text-2xl font-semibold gold-accent mb-6 text-center">
+                        <i class="fas fa-star mr-2"></i>
+                        あなたの分析結果
+                    </h2>
+                    
+                    <div id="visionResult" class="mb-8">
+                        <h3 class="text-xl font-semibold gold-accent mb-4">
+                            <i class="fas fa-lightbulb mr-2"></i>
+                            ありたい姿
+                        </h3>
+                        <div id="visionContent" class="text-gray-100 leading-relaxed"></div>
+                    </div>
+                    
+                    <div id="actionsResult">
+                        <h3 class="text-xl font-semibold gold-accent mb-4">
+                            <i class="fas fa-tasks mr-2"></i>
+                            行動案
+                        </h3>
+                        <div id="actionsContent" class="text-gray-100 leading-relaxed"></div>
                     </div>
                     
                     <button 
-                        onclick="analyzeVision()" 
-                        id="analyzeBtn"
-                        class="btn-primary w-full py-3 px-6 rounded-lg"
-                    >
-                        <i class="fas fa-magic mr-2"></i>
-                        ありたい姿を発見する
-                    </button>
-                </div>
-            </div>
-
-            <!-- ローディング -->
-            <div id="loadingScreen" class="hidden glass-card rounded-2xl p-8">
-                <div class="text-center">
-                    <div class="loading-spinner mx-auto mb-4"></div>
-                    <p class="text-white text-lg mb-2">AIがあなたの未来を分析中...</p>
-                    <p class="text-gray-300 text-sm">素敵な発見をお待ちください</p>
-                </div>
-            </div>
-
-            <!-- 結果表示 -->
-            <div id="resultScreen" class="hidden">
-                <!-- ありたい姿 -->
-                <div class="result-card glass-card rounded-2xl p-6 mb-6">
-                    <h2 class="text-xl font-bold text-white mb-4">
-                        <i class="fas fa-star gold-accent mr-2"></i>
-                        あなたのありたい姿
-                    </h2>
-                    <div class="space-y-4">
-                        <div>
-                            <h3 class="vision-title mb-2" id="visionTitle"></h3>
-                            <p class="text-gray-200 leading-relaxed" id="visionDescription"></p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 行動案 -->
-                <div class="result-card glass-card rounded-2xl p-6 mb-6">
-                    <h2 class="text-xl font-bold text-white mb-4">
-                        <i class="fas fa-route gold-accent mr-2"></i>
-                        具体的な行動案
-                    </h2>
-                    <div class="space-y-4" id="actionsList">
-                        <!-- 行動案がここに挿入されます -->
-                    </div>
-                </div>
-
-                <!-- 再分析ボタン -->
-                <div class="text-center">
-                    <button 
                         onclick="resetApp()" 
-                        class="btn-primary py-3 px-8 rounded-lg"
+                        class="btn-gold w-full mt-8 py-3 rounded-lg font-semibold"
                     >
                         <i class="fas fa-redo mr-2"></i>
-                        新しいワードで分析する
+                        新しい分析を始める
                     </button>
                 </div>
             </div>
@@ -238,89 +221,95 @@
     </div>
 
     <script>
-        // アクセスコード設定（イベントごとに変更）
-        const validCodes = ['VISION2025JUL'];
-        
-        // 文字数カウンター
-        document.getElementById('wordsInput').addEventListener('input', function() {
-            const lines = this.value.split('\n').filter(line => line.trim() !== '');
-            const counter = document.getElementById('charCounter');
-            
-            let hasLongLine = false;
-            lines.forEach(line => {
-                if (line.length > 100) {
-                    hasLongLine = true;
-                }
-            });
-            
-            counter.textContent = `入力された行数: ${lines.length}行`;
-            
-            if (hasLongLine) {
-                counter.className = 'char-counter mt-2 text-right error';
-                counter.textContent += ' (100文字を超える行があります)';
-            } else if (lines.length > 20) {
-                counter.className = 'char-counter mt-2 text-right warning';
-                counter.textContent += ' (20行を超えています)';
-            } else {
-                counter.className = 'char-counter mt-2 text-right';
-            }
-        });
+        let currentAccessCode = '';
 
-        // アクセスコードチェック
         function checkAccessCode() {
-            const userCode = document.getElementById('accessCodeInput').value;
+            const input = document.getElementById('accessCodeInput');
+            const code = input.value.trim();
+            const errorDiv = document.getElementById('accessCodeError');
             
-            if (validCodes.includes(userCode)) {
-                document.getElementById('accessCodeScreen').style.display = 'none';
-                document.getElementById('mainScreen').classList.remove('hidden');
+            const validCodes = ['VISION2025JUL'];
+            
+            if (validCodes.includes(code)) {
+                currentAccessCode = code;
+                document.getElementById('accessCodeSection').style.display = 'none';
+                document.getElementById('mainApp').classList.remove('hidden');
+                errorDiv.classList.add('hidden');
             } else {
-                alert('正しいアクセスコードを入力してください。');
+                errorDiv.classList.remove('hidden');
+                input.focus();
             }
         }
 
-        // Enterキーでアクセスコード確認
-        document.getElementById('accessCodeInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                checkAccessCode();
-            }
-        });
-
-        // 分析実行
-        async function analyzeVision() {
-            const wordsInput = document.getElementById('wordsInput').value.trim();
+        function updateCharCount() {
+            const textarea = document.getElementById('wordsInput');
+            const lines = textarea.value.split('\n').filter(line => line.trim() !== '');
+            const lineCountDiv = document.getElementById('lineCount');
+            const charCountDiv = document.getElementById('charCount');
             
-            if (!wordsInput) {
-                alert('ワードや文章を入力してください。');
-                return;
-            }
-
-            const lines = wordsInput.split('\n').filter(line => line.trim() !== '');
+            lineCountDiv.textContent = `${lines.length}行`;
             
-            // 文字数・行数チェック
-            let hasLongLine = false;
+            let overLimitLines = 0;
+            let maxChars = 0;
+            
             lines.forEach(line => {
                 if (line.length > 100) {
-                    hasLongLine = true;
+                    overLimitLines++;
                 }
+                maxChars = Math.max(maxChars, line.length);
             });
-
-            if (hasLongLine) {
-                alert('各行は100文字以内で入力してください。');
-                return;
+            
+            if (overLimitLines > 0) {
+                charCountDiv.textContent = `${overLimitLines}行が100文字を超えています`;
+                charCountDiv.classList.add('over-limit');
+            } else if (lines.length > 0) {
+                charCountDiv.textContent = `最長行: ${maxChars}文字`;
+                charCountDiv.classList.remove('over-limit');
+            } else {
+                charCountDiv.textContent = '各行の文字数をチェック中...';
+                charCountDiv.classList.remove('over-limit');
             }
-
+            
+            // 20行制限チェック
             if (lines.length > 20) {
-                alert('入力は20行以内でお願いします。');
+                lineCountDiv.classList.add('over-limit');
+            } else {
+                lineCountDiv.classList.remove('over-limit');
+            }
+        }
+
+        async function analyzeWords() {
+            const textarea = document.getElementById('wordsInput');
+            const words = textarea.value.trim();
+            const btn = document.getElementById('analyzeBtn');
+            const errorDiv = document.getElementById('inputError');
+            
+            // 入力検証
+            if (!words) {
+                showError('ワードまたは文章を入力してください', 'inputError');
                 return;
             }
-
-            // UI状態変更
-            document.getElementById('analyzeBtn').disabled = true;
-            document.getElementById('loadingScreen').classList.remove('hidden');
-            document.getElementById('resultScreen').classList.add('hidden');
-
+            
+            const lines = words.split('\n').filter(line => line.trim() !== '');
+            if (lines.length > 20) {
+                showError('入力は20行以内にしてください', 'inputError');
+                return;
+            }
+            
+            const overLimitLines = lines.filter(line => line.length > 100);
+            if (overLimitLines.length > 0) {
+                showError('各行は100文字以内にしてください', 'inputError');
+                return;
+            }
+            
+            // エラーメッセージをクリア
+            errorDiv.classList.add('hidden');
+            
+            // ローディング状態
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loading mr-2"></div>分析中...';
+            
             try {
-                // サーバーレス関数に送信
                 const response = await fetch('/api/analyze', {
                     method: 'POST',
                     headers: {
@@ -328,128 +317,132 @@
                     },
                     body: JSON.stringify({
                         words: words,
-                        accessCode: accessCode
+                        accessCode: currentAccessCode
                     })
                 });
-
+                
+                const data = await response.json();
+                
                 if (!response.ok) {
-                    throw new Error('分析中にエラーが発生しました。');
+                    throw new Error(data.error || `サーバーエラー: ${response.status}`);
                 }
-
-                const result = await response.json();
-                displayResult(result);
-
+                
+                displayResults(data.result);
+                
             } catch (error) {
-                console.error('Error:', error);
-                alert('分析中にエラーが発生しました。時間をおいて再度お試しください。');
+                console.error('分析エラー:', error);
+                let errorMessage = '分析中にエラーが発生しました。';
+                
+                if (error.message.includes('Failed to fetch')) {
+                    errorMessage = 'サーバーとの通信に失敗しました。インターネット接続を確認してください。';
+                } else if (error.message.includes('Invalid access code')) {
+                    errorMessage = 'アクセスコードが無効です。';
+                } else if (error.message.includes('Server configuration error')) {
+                    errorMessage = 'サーバー設定エラーです。管理者にお問い合わせください。';
+                } else if (error.message) {
+                    errorMessage = `エラー: ${error.message}`;
+                }
+                
+                showError(errorMessage, 'inputError');
             } finally {
-                document.getElementById('analyzeBtn').disabled = false;
-                document.getElementById('loadingScreen').classList.add('hidden');
+                // ボタンを元に戻す
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-magic mr-2"></i>ありたい姿を発見する';
             }
         }
 
-        // 結果表示
-        function displayResult(result) {
-            // ありたい姿表示
-            document.getElementById('visionTitle').textContent = result.vision.title;
-            document.getElementById('visionDescription').textContent = result.vision.description;
-
-            // 行動案表示
-            const actionsList = document.getElementById('actionsList');
-            actionsList.innerHTML = '';
+        function displayResults(resultText) {
+            // 結果を解析
+            const lines = resultText.split('\n').filter(line => line.trim() !== '');
             
-            result.actions.forEach((action, index) => {
-                const actionDiv = document.createElement('div');
-                actionDiv.className = 'bg-white bg-opacity-5 p-4 rounded-lg';
-                actionDiv.innerHTML = `
-                    <div class="flex items-start">
-                        <div class="bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900 rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm mr-4 flex-shrink-0 mt-1">
-                            ${index + 1}
-                        </div>
-                        <p class="text-gray-200 leading-relaxed">${action}</p>
-                    </div>
-                `;
-                actionsList.appendChild(actionDiv);
-            });
-
-            document.getElementById('resultScreen').classList.remove('hidden');
+            let visionTitle = '';
+            let visionDescription = '';
+            let actions = [];
+            
+            let currentSection = '';
+            let visionLines = [];
+            
+            for (let line of lines) {
+                if (line.includes('ありたい姿：') || line.includes('ありたい姿:')) {
+                    currentSection = 'vision';
+                    visionTitle = line.replace(/ありたい姿[：:]\s*/, '').trim();
+                } else if (line.includes('解説：') || line.includes('解説:')) {
+                    currentSection = 'description';
+                } else if (line.includes('行動案：') || line.includes('行動案:')) {
+                    currentSection = 'actions';
+                } else if (line.match(/^\d+\./)) {
+                    if (currentSection === 'actions') {
+                        actions.push(line.trim());
+                    }
+                } else if (currentSection === 'vision' && line.trim()) {
+                    visionLines.push(line.trim());
+                } else if (currentSection === 'description' && line.trim()) {
+                    visionDescription += line.trim() + ' ';
+                }
+            }
+            
+            // ありたい姿の説明が複数行の場合
+            if (visionLines.length > 0 && !visionDescription) {
+                visionDescription = visionLines.join(' ');
+            }
+            
+            // 結果を表示
+            const visionContent = document.getElementById('visionContent');
+            const actionsContent = document.getElementById('actionsContent');
+            
+            visionContent.innerHTML = `
+                <div class="mb-4">
+                    <h4 class="text-lg font-semibold gold-accent mb-2">${visionTitle}</h4>
+                    <p class="text-gray-200 leading-relaxed">${visionDescription.trim()}</p>
+                </div>
+            `;
+            
+            actionsContent.innerHTML = actions.map((action, index) => `
+                <div class="mb-3 p-3 bg-gray-800 bg-opacity-30 rounded-lg">
+                    <span class="gold-accent font-semibold">${index + 1}. </span>
+                    <span class="text-gray-200">${action.replace(/^\d+\.\s*/, '')}</span>
+                </div>
+            `).join('');
+            
+            // 結果セクションを表示
+            document.getElementById('resultsSection').classList.remove('hidden');
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // アプリリセット
+        function showError(message, elementId) {
+            const errorDiv = document.getElementById(elementId);
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+
         function resetApp() {
             document.getElementById('wordsInput').value = '';
-            document.getElementById('charCounter').textContent = '入力された行数: 0行';
-            document.getElementById('charCounter').className = 'char-counter mt-2 text-right';
-            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('resultsSection').classList.add('hidden');
+            document.getElementById('inputError').classList.add('hidden');
+            updateCharCount();
             document.getElementById('wordsInput').focus();
         }
+
+        // Enter キーでアクセスコード認証
+        document.getElementById('accessCodeInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkAccessCode();
+            }
+        });
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('accessCodeInput').focus();
+            updateCharCount();
+        });
     </script>
-
-    <!-- 
-    注意: このHTMLファイルは Vercel Functions と組み合わせて使用します。
-    
-    必要なVercel Function (/api/analyze.js):
-    
-    export default async function handler(req, res) {
-        if (req.method !== 'POST') {
-            return res.status(405).json({ error: 'Method not allowed' });
-        }
-
-        const { words } = req.body;
-        const API_KEY = process.env.OPENAI_API_KEY; // 環境変数から取得
-
-        try {
-            const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${API_KEY}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    model: 'gpt-3.5-turbo',
-                    messages: [{
-                        role: 'user',
-                        content: `あなたは百戦錬磨のメンターです。以下のワード・文章から、その人だけのオーダーメイドな分析を行い、ワクワクする未来を提案してください。
-
-入力されたワード・文章：
-${words.join('\n')}
-
-以下のJSON形式で出力してください：
-{
-  "vision": {
-    "title": "15-25文字の魅力的な表現",
-    "description": "100-150文字の具体的で感情豊かな描写"
-  },
-  "actions": [
-    "時期・方法・頻度を含む超具体的な行動1",
-    "時期・方法・頻度を含む超具体的な行動2",
-    "時期・方法・頻度を含む超具体的な行動3"
-  ]
-}`
-                    }],
-                    temperature: 0.8
-                })
-            });
-
-            const data = await response.json();
-            const result = JSON.parse(data.choices[0].message.content);
-            
-            res.status(200).json(result);
-        } catch (error) {
-            res.status(500).json({ error: 'Analysis failed' });
-        }
-    }
-
-    環境変数設定 (.env):
-    OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxx
-    -->
 </body>
 </html>
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDlZ5ZjvfKXGqLR7ykA1t%2FfcJ836j2A8avEBE5zLye4WNiOPczrSrUG%2FB0fATsF3KaGaCb45johYXHVOFpwe%2BOmU2ptgu9UPbJXM%2B0Z9BcU%2BkzYLc97pc6bCk9KV%2FFzZg4TQxfGUfR3FazdQelvJ4F4Q1Kj6yKmr%2BHiWDQEGFgNTAk0mYbkw6vJTqz5fAvu4GOdeZBW%2BOeaUvG9eIhXzzSW%2BZDP%2FHsuiRCjnyIGSO%2F9PQVgca9coNx8cfDMl43jvjRlDwbT8OyztKzcTanW8BwUt%2FIoHG9Ip%2Fe4XT18HibSYIm3k2M3KeZQc5fsB1hFsF6%2F2hsTSp7TJIHZ0uG9J9QzE90sV3Yk1kAUzHDmPQ6z2dJGUUbug7aKI%2BsdRDWn1cR%2Fazat7rP%2FRK0wJquSDg7alJZWuFul3Eqt19oo7yv8T5Bm7AO15uwdrgO69SJorE%2B3x%2FrpLFMUTButQCFdywnrcTOAzCWxfcy3DJKNaL2BYgYh5AIMmHUwaGULRTdRcwYy2r3XDIElMUC2sp7gg7xOM%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDruImqMtgsQQSUqniO9r45YYRj3GH5onam4xThOx%2BeiB2dgvTgOdSLVZOZlBWxVhJHhMXVELNznoTzublgpcRvjNgtiv1Kib36hEmNguagVoCJQ6g2XCxs3sLeI2dli1%2F92KEf%2FJ%2BlVVZqd2RCxAFQzZO8oFpq7PdZRaqXo0FiWFRMIQ8v62KADnmsKca8yusROY7s3TSsuKhB1%2FlVMWKJxlt8th4BxStOS0vv771Ine9D3Jz1OGM452zbEJ%2BmIJH9%2FbLRg2G9NdWr2B7Rxee9c6NiCq4gcGQJEvA8x9MKBRz0uatOzSBhTGSlum9D3hhOVE2FTcL83ZumUEoIxTTpQTbAjsyyzatw3Yq%2FXQ%2FLEYzMZLb0PH04kCBKWoV2DJMoBnKVO5jD7Kn47Lo3Cdg8Fbmwh%2BGKfCwnbCjwK%2FsvyoGho5XwTWx%2FboMv9e43sLdJE4XTiXAYBVOPV9EokkQT4U9wPFXyCGEVgsT8JgpCkYSH1tYRkVpvOm6nGN5x136OcDlD%2FP3iMIOIa%2B66mjJ3derzZqonUBCIJA1b2gwtz9";
         window.__genspark_locale = "ja-JP";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDlZ5ZjvfKXGqLR7ykA1t/fcJ836j2A8avEBE5zLye4WNiOPczrSrUG/B0fATsF3KaGaCb45johYXHVOFpwe+OmU2ptgu9UPbJXM+0Z9BcU+kzYLc97pc6bCk9KV/FzZg4TQxfGUfR3FazdQelvJ4F4Q1Kj6yKmr+HiWDQEGFgNTAk0mYbkw6vJTqz5fAvu4GOdeZBW+OeaUvG9eIhXzzSW+ZDP/HsuiRCjnyIGSO/9PQVgca9coNx8cfDMl43jvjRlDwbT8OyztKzcTanW8BwUt/IoHG9Ip/e4XT18HibSYIm3k2M3KeZQc5fsB1hFsF6/2hsTSp7TJIHZ0uG9J9QzE90sV3Yk1kAUzHDmPQ6z2dJGUUbug7aKI+sdRDWn1cR/azat7rP/RK0wJquSDg7alJZWuFul3Eqt19oo7yv8T5Bm7AO15uwdrgO69SJorE+3x/rpLFMUTButQCFdywnrcTOAzCWxfcy3DJKNaL2BYgYh5AIMmHUwaGULRTdRcwYy2r3XDIElMUC2sp7gg7xOM=";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDruImqMtgsQQSUqniO9r45YYRj3GH5onam4xThOx+eiB2dgvTgOdSLVZOZlBWxVhJHhMXVELNznoTzublgpcRvjNgtiv1Kib36hEmNguagVoCJQ6g2XCxs3sLeI2dli1/92KEf/J+lVVZqd2RCxAFQzZO8oFpq7PdZRaqXo0FiWFRMIQ8v62KADnmsKca8yusROY7s3TSsuKhB1/lVMWKJxlt8th4BxStOS0vv771Ine9D3Jz1OGM452zbEJ+mIJH9/bLRg2G9NdWr2B7Rxee9c6NiCq4gcGQJEvA8x9MKBRz0uatOzSBhTGSlum9D3hhOVE2FTcL83ZumUEoIxTTpQTbAjsyyzatw3Yq/XQ/LEYzMZLb0PH04kCBKWoV2DJMoBnKVO5jD7Kn47Lo3Cdg8Fbmwh+GKfCwnbCjwK/svyoGho5XwTWx/boMv9e43sLdJE4XTiXAYBVOPV9EokkQT4U9wPFXyCGEVgsT8JgpCkYSH1tYRkVpvOm6nGN5x136OcDlD/P3iMIOIa+66mjJ3derzZqonUBCIJA1b2gwtz9";
     </script>
     
     <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
