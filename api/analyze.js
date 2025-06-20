@@ -24,7 +24,7 @@ export default async function handler(req, res) {
     }
 
     // アクセスコード確認
-    const validCodes = ['NEW2025'];
+    const validCodes = ['NEWCODE2025'];
     if (!validCodes.includes(accessCode)) {
       return res.status(403).json({ error: 'アクセスコードが正しくありません' });
     }
